@@ -111,5 +111,6 @@ for i = 1, beesCount do -- how many bees
 		chestSlot = chestSlot + 1
 		multiplyCount = multiplyCount + 1
 	end
+	multiplyCount = 1
 end
 print("All bees are bred, the program is stopped")
