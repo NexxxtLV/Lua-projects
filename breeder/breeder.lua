@@ -1,4 +1,4 @@
---Made by NexxxtLV#3769 v1.1.1
+--Made by NexxxtLV#3769 v1.1.2
 component = require("component")
 gpu = component.gpu
 chest = component.diamond
