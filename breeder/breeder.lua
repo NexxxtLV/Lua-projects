@@ -5,7 +5,7 @@ chest = component.diamond
 apiary = component.proxy("94fd209f-b5f1-4863-b28f-e9fe3b4908ba")
 me = component.me_interface
 
-chestSlot = 62
+chestSlot = 61
 exportSide = "EAST"
 trashSide = "DOWN"
 
@@ -103,9 +103,9 @@ function pushItem(side, slot, maxAmount, intoSlot)
 		gpu.setForeground(0xFF0000)
 		print("Can't move 0 princess from chest")
 		gpu.setForeground(0xFFFFFF)
+		os.sleep(1)
 		return false
 	end
-	os.sleep(1)
 end
 
 function pullItem(side, slot, maxAmount, intoSlot)
@@ -117,9 +117,9 @@ function pullItem(side, slot, maxAmount, intoSlot)
 		gpu.setForeground(0xFF0000)
 		print("Can't move 0 princess from apiary")
 		gpu.setForeground(0xFFFFFF)
+		os.sleep(1)
 		return false
 	end
-	os.sleep(1)
 end
 
 gpu.setForeground(0x00FF00)
@@ -168,6 +168,7 @@ for i = 1, beesCount do -- how many bees
 			end
 		end
 	end
+	os.sleep(1)
 	clearNetwork()
 end
 print("All bees are bred, the program is stopped")
