@@ -1,4 +1,4 @@
---Made by NexxxtLV#3769 v1.1.2
+--Made by NexxxtLV#3769 v1.1.3
 component = require("component")
 gpu = component.gpu
 chest = component.diamond
@@ -169,6 +169,8 @@ for i = 1, beesCount do -- how many bees
 		end
 	end
 	os.sleep(1)
-	clearNetwork()
+	if i % 3 == 0 then
+		clearNetwork()
+	end
 end
 print("All bees are bred, the program is stopped")
