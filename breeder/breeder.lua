@@ -1,13 +1,31 @@
---Made by NexxxtLV#3769 v1.1.3
+--Made by NexxxtLV#3769 v1.2.0
 component = require("component")
+computer = require("computer")
+fs = require("filesystem")
+
 gpu = component.gpu
 chest = component.diamond
 apiary = component.proxy("94fd209f-b5f1-4863-b28f-e9fe3b4908ba")
 me = component.me_interface
 
-chestSlot = 61
 exportSide = "EAST"
 trashSide = "DOWN"
+slotFromWhereGet = 2
+timeZone = 3 -- GMT+3 Moscow
+timeCorrection = timeZone * 3600
+
+function getRealTime()
+	if not fs.get("/").isReadOnly() then
+	  local time = io.open("/tmp/.time", "w")
+
+	  time:close()
+	  os.sleep(0.01)
+	  local timeStamp = fs.lastModified("tmp/.time") / 1000 + timeCorrection
+	  return timeStamp
+	else
+	  return false
+	end
+  end
 
 function isDrone(table)
 	if string.find(table.label, "Drone") then
@@ -17,21 +35,23 @@ function isDrone(table)
 	end
 end
 
-function findPrincessInChest()
+function findPrincessInChest(slot)
 	local data = chest.getAllStacks(false)
-	for i = 1, chest.getInventorySize() do
-		if data[i] then
-			for name, value in pairs(data[i]) do
-				if type(value) ~= "table" then
-					if name == "name" then
-						if value == "beePrincessGE" then
-							print("Found "..value.." in slot: "..i)
-							return i
-						end
+	if data[slot] then
+		for name, value in pairs(data[slot]) do
+			if type(value) ~= "table" then
+				if name == "name" then
+					if value == "beePrincessGE" then
+						print("Found "..value.." in slot: "..slot)
+						return slot
 					end
 				end
 			end
 		end
+	else
+		gpu.setForeground(0xFF0000)
+		print("Critical error, can't find princess at slot"..slot)
+		gpu.setForeground(0x000000)
 	end
 end
 
@@ -54,22 +74,20 @@ function findPrincessInApiary()
 	return 0
 end
 
-function isApiaryFree(num)
-	for i = 1, 1 do
-		if apiary.getStackInSlot(i) then
-			return false
-		end
+function isApiaryFree()
+	if apiary.getStackInSlot(1) then
+		return false
 	end
 	return true
 end
 
 function waitForApiary(num)	
 	io.write("waitForApiary(" .. num .. ") ")
-	if isApiaryFree(num) ~= true then
+	if isApiaryFree() ~= true then
 		repeat
 			io.write(". ")
 			os.sleep(3)
-		until isApiaryFree(num) == true
+		until isApiaryFree() == true
 			print("waitForApiary(" .. num .. ") - is free")
 	else
 		print("waitForApiary(" .. num .. ") - is free")
@@ -132,12 +150,20 @@ print("Enter the number of bees to multiply: ")
 gpu.setForeground(0xFFFFFF)
 beesCount = io.read("*n")
 
+startTime = getRealTime()
+
 for i = 1, beesCount do -- how many bees
 	for j = 1, multiplyCount do --how many cycles
 		gpu.setForeground(0x00FF00)
 		print("Bee number "..i.." is multiplying, number of multiply: "..j)
 		gpu.setForeground(0xFFFFFF)
-		princessSlot = findPrincessInChest()
+
+		if j == 1 then
+			princessSlot = findPrincessInChest(slotFromWhereGet)
+		else
+			princessSlot = findPrincessInChest(1)
+		end
+
 		if princessSlot ~= 0 then
 			repeat
 			until pushItem(exportSide, princessSlot, 1, 1)
@@ -173,4 +199,4 @@ for i = 1, beesCount do -- how many bees
 		clearNetwork()
 	end
 end
-print("All bees are bred, the program is stopped")
+print("All bees are bred, done in "..os.date("%H:%M:%S", getRealTime() - startTime))
