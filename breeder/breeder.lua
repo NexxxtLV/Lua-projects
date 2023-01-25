@@ -1,4 +1,4 @@
---Made by NexxxtLV#3769 v1.2.1
+--Made by NexxxtLV#3769 v1.2.2
 component = require("component")
 computer = require("computer")
 fs = require("filesystem")
@@ -182,7 +182,7 @@ for i = 1, beesCount do -- how many bees
 			end
 		end
 	end
-	os.sleep(1)
+	os.sleep(5)
 	if i % 3 == 0 then
 		clearNetwork()
 	end
