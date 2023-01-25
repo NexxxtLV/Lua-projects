@@ -1,12 +1,12 @@
---Made by NexxxtLV#3769 v1.2.0
+--Made by NexxxtLV#3769 v1.2.1
 component = require("component")
 computer = require("computer")
 fs = require("filesystem")
 
 gpu = component.gpu
 chest = component.diamond
-apiary = component.proxy("94fd209f-b5f1-4863-b28f-e9fe3b4908ba")
 me = component.me_interface
+apiary = component.proxy("94fd209f-b5f1-4863-b28f-e9fe3b4908ba")
 
 exportSide = "EAST"
 trashSide = "DOWN"
@@ -17,7 +17,7 @@ timeCorrection = timeZone * 3600
 function getRealTime()
 	if not fs.get("/").isReadOnly() then
 	  local time = io.open("/tmp/.time", "w")
-
+	  time:write()
 	  time:close()
 	  os.sleep(0.01)
 	  local timeStamp = fs.lastModified("tmp/.time") / 1000 + timeCorrection
@@ -25,7 +25,7 @@ function getRealTime()
 	else
 	  return false
 	end
-  end
+end
 
 function isDrone(table)
 	if string.find(table.label, "Drone") then
@@ -37,20 +37,14 @@ end
 
 function findPrincessInChest(slot)
 	local data = chest.getAllStacks(false)
-	if data[slot] then
-		for name, value in pairs(data[slot]) do
-			if type(value) ~= "table" then
-				if name == "name" then
-					if value == "beePrincessGE" then
-						print("Found "..value.." in slot: "..slot)
-						return slot
-					end
-				end
-			end
+	if data[slot] and data[slot].name then
+		if string.find(data[slot].name, "beePrincessGE") then
+			print("Found "..data[slot].name.." in slot: "..slot)
+			return slot
 		end
 	else
 		gpu.setForeground(0xFF0000)
-		print("Critical error, can't find princess at slot"..slot)
+		print("Critical error, can't find princess at slot: "..slot)
 		gpu.setForeground(0x000000)
 	end
 end
@@ -58,16 +52,10 @@ end
 function findPrincessInApiary()
 	local data = apiary.getAllStacks(false)
 	for i = 3, 8 do
-		if data[i] then
-			for name, value in pairs(data[i]) do
-				if type(value) ~= "table" then
-					if name == "name" then
-						if value == "beePrincessGE" then
-							print("Found "..value.." in slot: "..i)
-							return i
-						end
-					end
-				end
+		if data[i] and data[i].name then
+			if string.find(data[i].name, "beePrincessGE") then
+				print("Found "..data[i].name.." in slot: "..i)
+				return i
 			end
 		end
 	end
@@ -185,8 +173,8 @@ for i = 1, beesCount do -- how many bees
 			princessSlot = findPrincessInApiary()
 			if princessSlot ~= 0 then
 				repeat
-				until pullItem(exportSide, princessSlot, 1, chestSlot)
-				chestSlot = chestSlot + 1
+				until pullItem(exportSide, princessSlot, 1, slotFromWhereGet)
+				slotFromWhereGet = slotFromWhereGet + 1
 			else
 				gpu.setForeground(0xFF0000)
 				print("[2]Can't get princess at slot nil")
